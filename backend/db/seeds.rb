@@ -4,25 +4,28 @@ puts "🌱 Seeding spices..."
 # create some pets
 require 'faker'
 
-# Create users
+
+# Create 10 users
 10.times do
-  User.create(
-    username: Faker::Internet.username,
+  User.create!(
+    username: Faker::Internet.username(specifier: 5..10),
     email: Faker::Internet.email,
-    password: Faker::Internet.password
+    password: 'password'
   )
 end
 
-# Create pets for each user
-User.all.each do |user|
-  rand(1..5).times do
-    user.pets.create(
-      name: Faker::Creature::Dog.name,
-      breed: Faker::Creature::Dog.breed,
-      age: rand(1..15)
-    )
-  end
+# Create 20 pets belonging to the first 5 users
+users = User.first(5)
+20.times do
+  breed = Faker::Creature::Dog.breed
+  Pet.create!(
+    name: Faker::Creature::Dog.name,
+    breed: breed,
+    age: Faker::Number.between(from: 1, to: 15),
+    description: Faker::Lorem.paragraph(sentence_count: 2),
+    image: Faker::LoremFlickr.image(size: "400x400", search_terms: [breed]),
+    user: users.sample
+  )
 end
-
 
 puts "✅ Done seeding!"
